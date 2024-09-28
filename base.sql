@@ -24,11 +24,9 @@ CREATE TABLE centre (
 CREATE TABLE placement_charge (
     id_placement INT PRIMARY KEY AUTO_INCREMENT,
     id_charge INT NOT NULL,
-    id_centre INT NOT NULL,
     montant DECIMAL(10, 2) CHECK (montant >= 0),
     date DATE NOT NULL,
-    FOREIGN KEY (id_charge) REFERENCES charge(id_charge),
-    FOREIGN KEY (id_centre) REFERENCES centre(id_centre)
+    FOREIGN KEY (id_charge) REFERENCES charge(id_charge)
 );
 
 CREATE TABLE repartition_charge_centre (
