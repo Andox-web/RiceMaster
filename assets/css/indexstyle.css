@@ -1,0 +1,10 @@
+.scrollable-table{
+    overflow-y: scroll;
+    overflow-y: scroll;
+    height:50vh;
+}
+body {
+    background-color: #e8f9e6; /* Vert clair légèrement plus frais */
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+}

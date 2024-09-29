@@ -1,0 +1,67 @@
+UIDE MANAO CODERGNITER : 
+
+-Etape 1:
+	*alaina le dossier codeigniter atrizay de renomena amle projet anao
+	*makany amin'ny : projetanao/application/config/routes.php de ovaina le $route['default_controller'] = 'Index_controller'; le 'Index_controller' io ny controller anao mandefa anle page d'acceuil. exemple ita amle controller :
+	<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Index_controller extends CI_Controller {
+
+    public function index() {
+        // Charger votre vue d'accueil
+        $this->load->view('index_view');
+    }
+}
+?>
+
+de le index_view io le pagenao tinao ho ita voloany refa tapena le nom ana projet anao.
+
+ -Etape 2 :
+	* apina anty ao amin'ny : application / config / autoload.php : $autoload['helper'] = array('url'); amzay maita ny assets rehetra izy 
+-Etape 3 :
+	*mcode : 
+
+
+NB TRES IMPORTANT :
+Refa tiana asina securite ny base , qui veut dire hoe tsy refa soratana etsy ambony fotsiny ny URL de tafiditra le olona , de ovaina anty zavatra ty ao amin'ny application / config/config.php  :
+$config['base_url'] = 'http://localhost/nom_projet/'; 
+de aveo asina anty eny amin'ny voloany page rehetra :
+defined('BASEPATH') OR exit('No direct script access allowed');
+ 
+Fonctions base integre anaty codeigniter 3 :
+
+-Connexion à la base de données
+	$this->load->database() : Charge la bibliothèque de base de données.
+	$this->db->close() : Ferme la connexion à la base de données.
+-Requêtes SQL de base
+	$this->db->query($sql) : Exécute une requête SQL manuelle.
+	$this->db->simple_query($sql) : Exécute une requête SQL simple, sans gestion des erreurs.
+-Sélection de données
+	$this->db->select($columns) : Sélectionne des colonnes spécifiques.
+	$this->db->from($table) : Spécifie la table à utiliser.
+	$this->db->where($key, $value) : Ajoute une clause WHERE.
+	$this->db->or_where($key, $value) : Ajoute une clause OR WHERE.
+	$this->db->get($table, $limit, $offset) : Exécute une requête SELECT.
+-Insertion de données
+	$this->db->insert($table, $data) : Insère des données dans une table.
+	$this->db->insert_batch($table, $data) : Insère plusieurs lignes en une seule fois.
+-Mise à jour de données
+	$this->db->update($table, $data, $where) : Met à jour des données dans une table.
+	$this->db->update_batch($table, $data, $index) : Met à jour plusieurs lignes en une seule fois.
+-Suppression de données
+	$this->db->delete($table, $where) : Supprime des données d'une table.
+	$this->db->empty_table($table) : Vide une table.
+	$this->db->truncate($table) : Tronque une table.
+-Autres fonctions utiles
+	$this->db->count_all($table) : Compte le nombre total de lignes dans une table.
+	$this->db->count_all_results($table) : Compte les lignes résultantes de la requête en cours.
+	$this->db->affected_rows() : Renvoie le nombre de lignes affectées par la dernière requête.
+	$this->db->insert_id() : Renvoie l'ID de la dernière ligne insérée.
+	$this->db->last_query() : Renvoie la dernière requête exécutée.
+	$this->db->escape($str) : Échappe une chaîne de caractères pour la sécurité.
+	$this->db->trans_start() : Démarre une transaction.
+	$this->db->trans_complete() : Termine une transaction.
+	$this->db->trans_status() : Vérifie le statut d'une transaction.
+	$this->db->trans_rollback() : Annule une transaction.
+	$this->db->trans_commit() : Valide une transaction.

@@ -8,8 +8,7 @@
     <!-- Css Styles -->
     <link rel="stylesheet" href="<?php echo base_url()?>assets/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="<?php echo base_url()?>assets/css/style.css" type="text/css">
-    <link rel="stylesheet" href="<?php echo base_url()?>assets/css/indexstyle.css" type="text/css">
-    <link rel="stylesheet" href="<?php echo base_url()?>assets/css/mystyle.css" type="text/css">
+    <link rel="stylesheet" href="<?php echo base_url($style)?>" type="text/css">
 </head>
 <body>
     <header class="header">
