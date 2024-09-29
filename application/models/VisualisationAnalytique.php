@@ -350,7 +350,7 @@ class VisualisationAnalytique extends CI_Model {
     public function CoutProduit(int $produit,$date_debut,$date_fin) {
         $charges_exercice=$this->getChargesByExercice($date_debut,$date_fin);
         $calculateCentreTotalsByCentre=$this->calculateCentreTotalsByCentre($charges_exercice);
-        return $this->CoutProduitWithData($produit,@$calculateCentreTotalsByCentre);
+        return $this->CoutProduitWithData($produit,$calculateCentreTotalsByCentre);
     }
     public function CoutTousProduits($date_debut, $date_fin) {
         $this->load->model('ProduitModel');
