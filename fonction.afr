@@ -1,0 +1,58 @@
+
+validateChargeExists(int $charge): bool
+validatePourcentages(array $pourcentage): bool
+insertRepartitionCharge(int $charge, int $centre, float $pourcentage, date $date): bool
+-function insertRepartitionChargeOfCentre(int $charge, array[id_centre=>pourcentage] $pourcentage_centre): bool
+
+validateCentreStructureExists(int $centre_structure):bool
+validateOperativeCentresExist(array $pourcentage_centre): bool
+insertRepartitionStructure(int $centre_structure, int $centre_operative, float $pourcentage, date $date): bool
+-function insertRepartitionStructureOperative(int $centre_structure, array[id_centre_operative=>pourcentage] $pourcentage_centre): bool
+
+-getChargesByExercice(date $date_debut, date $date_fin): [id_charge=>[
+                                                                id_charge int,
+                                                                nom int,
+                                                                unite_oeuvre str,
+                                                                total[total int,fixe int,variable int],
+                                                                centre[id_centre=>[
+                                                                    total int,fixe int,variable int
+                                                                ]]
+                                                            ]]
+calculateCentreTotals(int $id_centre, date $date_debut, date $date_fin): array[total int,fixe int,variable int]
+calculateGlobalTotals(date $date_debut, date $date_fin): array[total int,fixe int,variable int]
+-function getTabAnalytiqueByExercice(date $date_debut,date $date_fin): array[
+                                                            Rubrique[id_charge=>[
+                                                                id_charge int,
+                                                                nom int,
+                                                                unite_oeuvre str,
+                                                                total[total int,fixe int,variable int],
+                                                                centre[id_centre=>[
+                                                                    total int,fixe int,variable int
+                                                                ]]
+                                                            ]],
+                                                            total[
+                                                                total[total int,fixe int,variable int],
+                                                                centre[id_centre=>[
+                                                                    total int,fixe int,variable int
+                                                                ]]
+                                                            ]
+                                                        ]
+
+getOperativeCentres(int $centre_structure, date $date_debut, date $date_fin): array
+calculateTotalCostCentre(int $centre_structure, $centre_operative ,date $date_debut, date $date_fin): int
+-function getRepartitionByCentre(int centre_structure,date $date_debut,date $date_fin,$charge_exercice):array[
+                                                                                        centre_operative[id_centre_operative=>[
+                                                                                            cout_direct int,
+                                                                                            cles int,
+                                                                                            cout_struture int 
+                                                                                            cout_total int
+                                                                                        ]],
+                                                                                        total[cout_direct,cout_struture,cout_total]
+                                                                                    ]
+
+getOperativeCentresForProduit(int $produit, date $date_debut, date $date_fin): array                                       
+-function getCoutProduit(int produit,$calculateCentreTotalsByCentre):array[
+                                                                        produit[info]
+                                                                        centre_operative[id_centre_operative=>[cout_total]]
+                                                                        cout_total int                                                                       
+                                                                    ]
