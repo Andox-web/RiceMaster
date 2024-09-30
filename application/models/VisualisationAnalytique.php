@@ -5,7 +5,7 @@ class VisualisationAnalytique extends CI_Model {
     }
  public function getChargesByExercice($date_debut, $date_fin) {
         // Sélection des charges ayant des placements dans l'intervalle de dates
-        $this->db->select('charge.id_charge, charge.nom, charge.unite_oeuvre, charge.nature, charge.id_cout_unitaire');
+        $this->db->select('charge.id_charge, charge.nom, charge.unite_oeuvre, charge.nature');
         $this->db->from('charge');
         $this->db->join('placement_charge', 'placement_charge.id_charge = charge.id_charge', 'inner');
         $this->db->where('placement_charge.date >=', $date_debut);
@@ -19,30 +19,16 @@ class VisualisationAnalytique extends CI_Model {
 
         foreach ($charges as $charge) {
             $id_charge = $charge['id_charge'];
-            $id_cout_unitaire = $charge['id_cout_unitaire'];
-            
             // Calcul du montant total de la charge
             $total_montant = 0;
 
-            if ($id_cout_unitaire == -1) {
-                // Si id_cout_unitaire = -1, on somme les montants de placement_charge
-                $this->db->select('SUM(placement_charge.montant) AS total_montant');
-                $this->db->from('placement_charge');
-                $this->db->where('placement_charge.id_charge', $id_charge);
-                $this->db->where('placement_charge.date >=', $date_debut);
-                $this->db->where('placement_charge.date <=', $date_fin);
-                $total_montant = (float) $this->db->get()->row()->total_montant;
-            } else {
-                // Sinon, on somme les quantités * prix unitaire
-                $this->db->select('SUM(placement_charge.quantite * cout_unitaire.prix_unitaire) AS total_montant');
-                $this->db->from('placement_charge');
-                $this->db->join('cout_unitaire', 'cout_unitaire.id_cout_unitaire = ' . (int)$id_cout_unitaire, 'inner'); // Correction ici
-                $this->db->where('placement_charge.id_charge', $id_charge);
-                $this->db->where('placement_charge.date >=', $date_debut);
-                $this->db->where('placement_charge.date <=', $date_fin);
-                $total_montant = (float) $this->db->get()->row()->total_montant;
-                
-            }
+            // Si id_cout_unitaire = -1, on somme les montants de placement_charge
+            $this->db->select('SUM(placement_charge.montant) AS total_montant');
+            $this->db->from('placement_charge');
+            $this->db->where('placement_charge.id_charge', $id_charge);
+            $this->db->where('placement_charge.date >=', $date_debut);
+            $this->db->where('placement_charge.date <=', $date_fin);
+            $total_montant = (float) $this->db->get()->row()->total_montant;
 
             // Fixe et variable
             $fixe = $charge['nature'] ? $total_montant : 0;
@@ -53,6 +39,7 @@ class VisualisationAnalytique extends CI_Model {
                 'id_charge' => $id_charge,
                 'nom' => $charge['nom'],
                 'unite_oeuvre' => $charge['unite_oeuvre'],
+                'nature' =>$charge['nature'],
                 'total' => [
                     'total' => $total_montant,
                     'fixe' => $fixe,
@@ -153,9 +140,9 @@ class VisualisationAnalytique extends CI_Model {
                 }
 
                 // Ajouter les valeurs de la charge à celles du centre
-                $centre_totals[$id_centre]['total'] += $centre_data['total'];
-                $centre_totals[$id_centre]['fixe'] += $centre_data['fixe'];
-                $centre_totals[$id_centre]['variable'] += $centre_data['variable'];
+                $centre_totals[$id_centre]['total'] += $centre_data['total']??0;
+                $centre_totals[$id_centre]['fixe'] += $centre_data['fixe']??0;
+                $centre_totals[$id_centre]['variable'] += $centre_data['variable']??0;
             }
         }
 
@@ -189,41 +176,49 @@ class VisualisationAnalytique extends CI_Model {
 
 
 
-    public function getOperativeCentres( $centre_structure, $date_debut, $date_fin){
+    public function getOperativeCentres( $centre_structure, $date_debut, $date_fin,$totaux_centres){
         // S'assurer que les dates sont au bon format
         $date_debut = date('Y-m-d', strtotime($date_debut));
         $date_fin = date('Y-m-d', strtotime($date_fin));
     
         // Sélectionner les centres opérationnels associés au centre de structure dans l'intervalle de dates
-        $this->db->select('id_centre_operative, pourcentage');
+        $this->db->select('repartition_structure_operative.id_centre_operative, centre.nom, repartition_structure_operative.pourcentage');
         $this->db->from('repartition_structure_operative');
+        $this->db->join('centre', 'centre.id_centre = repartition_structure_operative.id_centre_operative', 'inner'); // Join sur la table centre
         $this->db->where('id_centre_structure', $centre_structure);
         $this->db->where('date >=', $date_debut);
         $this->db->where('date <=', $date_fin);
+        
         
         // Exécuter la requête
         $query = $this->db->get();
     
         // Récupérer les résultats sous forme de tableau
         $centres_ope = $query->result_array();
-    
+        $total = 0;
+        foreach ($centres_ope as $centre) {
+            $total+=$totaux_centres[$centre['id_centre_operative']]['total'];
+        }
+
         // Transformer le tableau pour l'adapter à la structure souhaitée
         $result = [];
         foreach ($centres_ope as $centre) {
             $result[$centre['id_centre_operative']] = [
-                'pourcentage' => (float) $centre['pourcentage']
+                'pourcentage' => (float) ($total/$totaux_centres[$centre['id_centre_operative']]['total'])*100,
+                'nom'=>$centre['nom']
             ];
         }
     
         return $result;
     }
-    public function getRepartitionByCentre(int $centre_structure, $date_debut, $date_fin){
-        // Récupérer les centres opérationnels associés à la structure dans l'intervalle de dates
-        $centres_ope = $this->getOperativeCentres($centre_structure, $date_debut, $date_fin);
+    public function getRepartitionByCentre($centre_structure, $date_debut, $date_fin){
         
         // Récupérer les totaux par centre
         $totaux_centres = $this->calculateCentreTotalsByCentre($this->getChargesByExercice($date_debut,$date_fin));
         
+        // Récupérer les centres opérationnels associés à la structure dans l'intervalle de dates
+        $centres_ope = $this->getOperativeCentres($centre_structure, $date_debut, $date_fin,$totaux_centres);
+
         // Initialiser les résultats
         $resultat = [
             'centre_operative' => [],
@@ -249,6 +244,7 @@ class VisualisationAnalytique extends CI_Model {
     
             // Ajouter les données au résultat
             $resultat['centre_operative'][$id_centre_operative] = [
+                'nom' => $data['nom'],
                 'cout_direct' => (int) $cout_direct,
                 'cles' => (float) $pourcentage,
                 'cout_structure' => (float) $cout_structure,
@@ -258,14 +254,37 @@ class VisualisationAnalytique extends CI_Model {
             // Accumuler les totaux
             $resultat['total']['cout_direct'] += $cout_direct;
         }
-        $resultat['total']['cout_structure'] += $totaux_centres[$centre_structure]['total'];
+        $resultat['total']['cout_structure'] += $totaux_centres[$centre_structure]['total'] ?? 0;
         $resultat['total']['cout_total'] = $resultat['total']['cout_direct']+$resultat['total']['cout_structure'];
     
         return $resultat;
     }
+    public function getStructureCentres() {
+        // Requête pour sélectionner les centres où operative est false (0)
+        $this->db->where('operative', 0); // 0 représente "non opératif"
+        $query = $this->db->get('centre'); // Nom de la table
 
+        return $query->result_array(); // Retourne les résultats sous forme de tableau
+    }
 
+    public function getRepartitionForAllStructures($date_debut, $date_fin) {
+        // Récupérer les centres non opérationnels
+        $nonOperativeCentres = $this->getStructureCentres();
+        
+        $repartitions = []; // Initialiser un tableau pour stocker les répartitions
 
+        // Parcourir chaque centre non opérationnel et récupérer les répartitions
+        foreach ($nonOperativeCentres as $centre) {
+            $centre_id = $centre['id_centre']; // Récupérer l'ID du centre
+
+            // Appeler la méthode pour obtenir les répartitions
+            $centre_repartition = $this->getRepartitionByCentre($centre_id, $date_debut, $date_fin);
+            $repartitions[$centre_id] = $centre_repartition; // Ajouter la répartition au tableau
+            $repartitions[$centre_id]['centre']=$centre;
+        }
+
+        return $repartitions; // Retourner les répartitions
+    }
 
 
 
@@ -284,11 +303,13 @@ class VisualisationAnalytique extends CI_Model {
         $total_centre = 0;
         foreach ($result as $row) {
             // Calculate the total contribution of each structure
-            $contribution = ($calculateCentreTotalsByCentre[$row['id_centre_structure']]['total'] * $row['pourcentage'] / 100);
+            $contribution = ($calculateCentreTotalsByCentre[$row['id_centre_structure']]['total']??0 * $row['pourcentage'] / 100);
             $total_centre += $contribution;
         }
         return $total_centre;
     }
+     // Fonction pour obtenir les centres non opératifs
+    
 
     public function getOperativeCentresForProduit(int $produit){
         // Initialize the return array
@@ -328,7 +349,7 @@ class VisualisationAnalytique extends CI_Model {
         // Step 3: Calculate the costs for each operative centre
         foreach ($operative_centres as $centre_id => $centre_data) {
             // Get the total costs for the center
-            $cout_direct = $calculateCentreTotalsByCentre[$centre_id]['total'];
+            $cout_direct = $calculateCentreTotalsByCentre[$centre_id]['total']??0;
     
             // Get the total contribution of structures linked to this centre
             $total_structure_contribution = $this->getStructuresByCentre($centre_id, $calculateCentreTotalsByCentre);
@@ -338,6 +359,7 @@ class VisualisationAnalytique extends CI_Model {
     
             // Store the result for the current operative centre
             $result['centre_operative'][$centre_id] = [
+                'nom' => $centre_data['centre_name'],
                 'cout_total' => $cout_total,
             ];
     

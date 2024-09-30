@@ -19,7 +19,7 @@ class ChargeModel extends CI_Model {
             throw new Exception("Erreur lors de l'insertion de la charge.");
         }
 
-        return true; // Retourne succès si tout est bon
+        return $this->db->insert_id();; // Retourne succès si tout est bon
     }
 
     /**

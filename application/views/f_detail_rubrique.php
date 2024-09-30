@@ -28,16 +28,6 @@
             <input type="date" id="date" name="date" required>
         </div>
 
-        <!-- Select Centre -->
-        <div class="form-group">
-            <label for="centre">Centre :</label>
-            <select id="centre" name="centre">
-                <option value="centre1">Centre 1</option>
-                <option value="centre2">Centre 2</option>
-                <option value="centre3">Centre 3</option>
-            </select>
-        </div>
-
         <!-- Select Rubrique -->
         <div class="form-group">
             <label for="rubrique">Rubrique :</label>

@@ -3,7 +3,7 @@ CREATE TABLE cout_unitaire (
     nom VARCHAR(255) NOT NULL,
     unite_oeuvre VARCHAR(50),
     prix_unitaire DECIMAL(10, 2) CHECK (prix_unitaire >= 0)     
-)
+);
 CREATE TABLE charge (
     id_charge INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(255) NOT NULL,

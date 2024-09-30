@@ -94,36 +94,22 @@ class RepartitionChargeCentreModel extends CI_Model {
             throw new Exception("La somme des pourcentages doit être égale à 100 et chaque pourcentage doit être compris entre 0 et 100.");
         }
 
-        $this->db->trans_start(); // Démarre la transaction
+        foreach ($pourcentage_centre as $id_centre => $pourcentage) {
+            // Préparation des données
+            $data = [
+                'id_charge' => $charge,
+                'pourcentage' => $pourcentage,
+                'id_centre' => $id_centre,
+                'date' => $date
+            ];
 
-        try {
-            // Insérer ou mettre à jour les répartitions de charge pour chaque centre
-            foreach ($pourcentage_centre as $id_centre => $pourcentage) {
-                // Préparation des données
-                $data = [
-                    'id_charge' => $charge,
-                    'pourcentage' => $pourcentage,
-                    'id_centre' => $id_centre,
-                    'date' => $date
-                ];
-
-                $this->insertRepartitionChargeCentre($data);
-            }
-            if ($this->assurePourcentagesForCharge() === false) {
-                throw new Exception("La somme des pourcentages doit être égale à 100 et chaque pourcentage doit être compris entre 0 et 100");
-            }
-            $this->db->trans_complete(); // Termine la transaction
-
-            if ($this->db->trans_status() === FALSE) {
-                throw new Exception("Erreur lors de la transaction de répartition des charges.");
-            }
-
-            return true; // Retourne succès si tout est bon
-
-        } catch (Exception $e) {
-            $this->db->trans_rollback(); // Annule la transaction en cas d'erreur
-            throw new Exception("Échec de l'insertion de la répartition des charges : " . $e->getMessage());
+            $this->insertRepartitionChargeCentre($data);
         }
+        if ($this->assurePourcentagesForCharge($charge,$date) === false) {
+            throw new Exception("La somme des pourcentages doit être égale à 100 et chaque pourcentage doit être compris entre 0 et 100");
+        }
+
+        return true; // Retourne succès si tout est bon
     }
     
     /**
