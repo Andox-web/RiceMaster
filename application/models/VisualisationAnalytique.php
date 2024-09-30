@@ -204,7 +204,7 @@ class VisualisationAnalytique extends CI_Model {
         $result = [];
         foreach ($centres_ope as $centre) {
             $result[$centre['id_centre_operative']] = [
-                'pourcentage' => (float) ($total/$totaux_centres[$centre['id_centre_operative']]['total'])*100,
+                'pourcentage' => round((float) ($totaux_centres[$centre['id_centre_operative']]['total']*100)/$total,2),
                 'nom'=>$centre['nom']
             ];
         }
@@ -290,7 +290,7 @@ class VisualisationAnalytique extends CI_Model {
 
 
 
-    public function getStructuresByCentre(int $centre_id, array $calculateCentreTotalsByCentre) {
+    public function getStructuresByCentre(int $centre_id, array $calculateCentreTotalsByCentre,$date_debut,$date_fin) {
         // Query to get the structures linked to a specific center with their percentages
         $this->db->select('rs.id_centre_structure, rs.pourcentage');
         $this->db->from('repartition_structure_operative rs');
@@ -301,10 +301,14 @@ class VisualisationAnalytique extends CI_Model {
         $result = $query->result_array();
     
         $total_centre = 0;
+
         foreach ($result as $row) {
+            $repartition = $this->getRepartitionByCentre($row['id_centre_structure'], $date_debut, $date_fin);
+            $pourcentage = $repartition['centre_operative'][$centre_id]['cles'];
+
             // Calculate the total contribution of each structure
-            $contribution = ($calculateCentreTotalsByCentre[$row['id_centre_structure']]['total']??0 * $row['pourcentage'] / 100);
-            $total_centre += $contribution;
+            $contribution = ((($calculateCentreTotalsByCentre[$row['id_centre_structure']]['total']??0) * $pourcentage) / 100);
+            $total_centre = $contribution;
         }
         return $total_centre;
     }
@@ -336,7 +340,7 @@ class VisualisationAnalytique extends CI_Model {
         return $operative_centres;
     }
     
-    public function CoutProduitWithData(int $produit, array $calculateCentreTotalsByCentre) {
+    public function CoutProduitWithData(int $produit, array $calculateCentreTotalsByCentre,$date_debut,$date_fin) {
         // Step 1: Initialize the return array
         $result = [
             'centre_operative' => [],
@@ -352,10 +356,10 @@ class VisualisationAnalytique extends CI_Model {
             $cout_direct = $calculateCentreTotalsByCentre[$centre_id]['total']??0;
     
             // Get the total contribution of structures linked to this centre
-            $total_structure_contribution = $this->getStructuresByCentre($centre_id, $calculateCentreTotalsByCentre);
+            $total_structure_contribution = $this->getStructuresByCentre($centre_id, $calculateCentreTotalsByCentre,$date_debut,$date_fin);
     
             // Calculate cout_total for the operative centre
-            $cout_total = $cout_direct + $total_structure_contribution;
+            $cout_total = $cout_direct+$total_structure_contribution;
     
             // Store the result for the current operative centre
             $result['centre_operative'][$centre_id] = [
@@ -372,7 +376,7 @@ class VisualisationAnalytique extends CI_Model {
     public function CoutProduit(int $produit,$date_debut,$date_fin) {
         $charges_exercice=$this->getChargesByExercice($date_debut,$date_fin);
         $calculateCentreTotalsByCentre=$this->calculateCentreTotalsByCentre($charges_exercice);
-        return $this->CoutProduitWithData($produit,$calculateCentreTotalsByCentre);
+        return $this->CoutProduitWithData($produit,$calculateCentreTotalsByCentre,$date_debut,$date_fin);
     }
     public function CoutTousProduits($date_debut, $date_fin) {
         $this->load->model('ProduitModel');
@@ -390,7 +394,7 @@ class VisualisationAnalytique extends CI_Model {
         // Parcourir chaque produit et calculer son coût
         foreach ($produits as $produit) {
             // Calculer le coût du produit en utilisant les données existantes
-            $cout_produit = $this->CoutProduitWithData($produit['id_produit'], $calculateCentreTotalsByCentre);
+            $cout_produit = $this->CoutProduitWithData($produit['id_produit'], $calculateCentreTotalsByCentre,$date_debut,$date_fin);
     
             // Stocker le résultat pour ce produit dans le tableau
             $resultats[$produit['id_produit']] = $cout_produit;

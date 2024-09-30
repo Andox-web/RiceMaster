@@ -15,7 +15,7 @@
 
     <h1>Formulaire de Culture de Riz</h1>
 
-    <form>
+    <form action="<?php echo site_url("Rubrique/index/2"); ?>" method="post">
         <!-- Input Montant -->
         <div class="form-group">
             <label for="montant">Montant :</label>
@@ -32,15 +32,15 @@
         <div class="form-group">
             <label for="rubrique">Rubrique :</label>
             <select id="rubrique" name="rubrique">
-                <option value="rubrique1">Rubrique 1</option>
-                <option value="rubrique2">Rubrique 2</option>
-                <option value="rubrique3">Rubrique 3</option>
+                <?php foreach($charges as $charge){ ?>
+                    <option value="<?=$charge['id_charge']?>"><?=$charge['nom']?></option>
+                <?php } ?>
             </select>
         </div>
 
         <br>
         <!-- Bouton Soumettre avec margin-left -->
-        <a href="#"><button type="submit">Soumettre</button></a>
+        <button type="submit">Soumettre</button>
     </form>
 
     <script>

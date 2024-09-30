@@ -16,7 +16,7 @@
 
         <h1>Formulaire d'Exercice</h1>
 
-        <form action="insert_exercice.php" method="POST">
+        <form action="<?= site_url('Exo/insertExercice') ?>" method="POST">
             <div class="form-group">
                 <label for="nom">Nom :</label>
                 <input type="text" id="nom" name="nom" placeholder="Entrez un nom" required>

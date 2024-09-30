@@ -44,25 +44,25 @@
                                         $id_centre=$centre['id_centre'];
                                         $montant=[
                                             'pourcentage'=>0,
-                                            'total' => '-',
-                                            'fixe' => '-',
-                                            'variable' => '-'
+                                            'total' => '0',
+                                            'fixe' => '0',
+                                            'variable' => '0'
                                         ];
                                         if (isset($charge['centre'][$id_centre])) {
                                             $montant=$charge['centre'][$id_centre];      
                                         }
                                         ?>
 
-                                        <td><?php echo $montant['pourcentage']; ?>%</td>
-                                        <td><?php echo $montant['fixe']; ?></td>
-                                        <td><?php echo $montant['variable']; ?></td>
+                                        <td><?php echo  number_format($montant['pourcentage']); ?>%</td>
+                                        <td><?php echo number_format($montant['fixe']); ?></td>
+                                        <td><?php echo number_format($montant['variable']); ?></td>
 
                                         <?php
                                         
                                     }?>
                                     
-                                    <td><?php echo $charge['total']['fixe']; ?></td>
-                                    <td><?php echo $charge['total']['variable']; ?></td>
+                                    <td><?php echo number_format($charge['total']['fixe']); ?></td>
+                                    <td><?php echo number_format($charge['total']['variable']); ?></td>
                                             
                                 </tr>
                             <?php endforeach; ?>
@@ -71,22 +71,22 @@
                         <tfoot>
                             <tr>
                                 <td rowspan="2">TOTAL</td>
-                                <td rowspan="2"><?=$charges['total']['total']['total']?></td>
+                                <td rowspan="2"><?=number_format($charges['total']['total']['total'])?></td>
                                 <td rowspan="2" colspan="2"></td>
                                 <?php foreach ($centres as $centre): ?>
                                     <td></td>
-                                    <td><?=$charges['total']['centre'][$centre['id_centre']]['fixe']??0?></td>
-                                    <td><?=$charges['total']['centre'][$centre['id_centre']]['variable']??0?></td>
+                                    <td><?=number_format($charges['total']['centre'][$centre['id_centre']]['fixe']??0)?></td>
+                                    <td><?=number_format($charges['total']['centre'][$centre['id_centre']]['variable']??0)?></td>
                                 <?php endforeach; ?>
-                                <td><?=$charges['total']['total']['fixe']?></td>
-                                <td><?=$charges['total']['total']['variable']?></td>
+                                <td><?=number_format($charges['total']['total']['fixe'])?></td>
+                                <td><?=number_format($charges['total']['total']['variable'])?></td>
                             </tr>
                             <tr>
                                 <?php foreach ($centres as $centre): ?>
                                     <td colspan="3"><?=$charges['total']['centre'][$centre['id_centre']]['total']??0?></td>
                                 <?php endforeach; ?>
-                                <td><?=$charges['total']['total']['fixe']?></td>
-                                <td><?=$charges['total']['total']['variable']?></td>
+                                <td><?=number_format($charges['total']['total']['fixe'])?></td>
+                                <td><?=number_format($charges['total']['total']['variable'])?></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -106,20 +106,20 @@
                                     <?php foreach ($repartition['centre_operative'] as $id_centre => $operation): ?>
                                         <tr>
                                             <td>TOTAL <?=$operation['nom']?></td>
-                                            <td><?=$operation['cout_direct']?></td>
+                                            <td><?=number_format($operation['cout_direct'])?></td>
                                             <td><?=$operation['cles']?> %</td>
-                                            <td><?=$operation['cout_structure']?></td>
-                                            <td><?=$operation['cout_total']?></td>
+                                            <td><?=number_format($operation['cout_structure'])?></td>
+                                            <td><?=number_format($operation['cout_total'])?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td>Total Genaral</td>
-                                        <td><?=$repartition['total']['cout_direct']?></td>
+                                        <td>Total General</td>
+                                        <td><?=number_format($repartition['total']['cout_direct'])?></td>
                                         <td></td>
-                                        <td ><?=$repartition['total']['cout_structure']?></td>
-                                        <td ><?=$repartition['total']['cout_total']?></td>
+                                        <td ><?=number_format($repartition['total']['cout_structure'])?></td>
+                                        <td ><?=number_format($repartition['total']['cout_total'])?></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -146,13 +146,13 @@
                                 <?php foreach ($produit['centre_operative'] as $revenu){ ?>
                                 <tr>
                                     <td>Cout de <?=$revenu['nom']?></td>
-                                    <td><?=$revenu['cout_total']?></td>
+                                    <td><?=number_format($revenu['cout_total'])?></td>
                                 </tr>
                                 <?php } ?>
                             </tbody>
                             <tfoot>
                                 <th>Cout du kg de <?=$produit['produit']['nom']?></th>
-                                <th><?=$recolte!=0?$produit['cout_total']/$recolte:0?></th>
+                                <th><?=number_format(round($recolte!=0?$produit['cout_total']/$recolte:0,2))?></th>
                             </tfoot>
                         </table>
                         <br>

@@ -8,6 +8,7 @@ class Rubrique extends CI_Controller {
         $this->load->model('ChargeModel');
         $this->load->model('CentreModel');
         $this->load->model('RepartitionChargeCentreModel');
+        $this->load->model('PlacementChargeModel');
     } 
     public function index($page) {
         if ($page == 1) {
@@ -32,7 +33,6 @@ class Rubrique extends CI_Controller {
                     $pourcentage_data = [];
                     foreach ($data['centres'] as $key => $value) {
                         $pourcentage_data[$value['id_centre']] = !empty($this->input->post('centre'.$value['id_centre'])) ? $this->input->post('centre'.$value['id_centre']) : 0;
-
                     }
 
                     $this->RepartitionChargeCentreModel->insertRepartitionChargeOfCentre($id_charge,$pourcentage_data,date("Y-m-d"));
@@ -66,7 +66,7 @@ class Rubrique extends CI_Controller {
                     'date' => $this->input->post('date'),
                     'id_charge' => $this->input->post('rubrique')
                 ];
-
+                var_dump($data);
                 try {
                     // Appeler la méthode d'insertion du modèle
                     $this->PlacementChargeModel->insertPlacementCharge($data);

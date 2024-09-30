@@ -11,5 +11,17 @@ class Centre extends CI_Controller {
         $data['style'] = "assets/css/style1.css";
         $this->load->view('form_centre', $data); 
     }   
+    public function insert() {
+        $this->load->model("CentreModel");
+        $nom = $this->input->post('nom');
+        $operative = $this->input->post('operative');
+        $data = array(
+			'nom' =>  $nom,
+            'operative' => $operative
+		);
+        $this->CentreModel->insertCentre($data);
+        redirect("centre/index");
+    }
+
 }
 ?>
