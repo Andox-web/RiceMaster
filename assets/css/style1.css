@@ -1,0 +1,97 @@
+/* Thème vert et jaune avec des couleurs naturelles */
+body {
+    background-color: #e8f9e6; /* Vert clair légèrement plus frais */
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+}
+
+label, button {
+    color: #388e3c; /* Vert plus foncé et vibrant */
+}
+
+h1 {
+    color: #fdd835; /* Jaune doré doux pour le titre */
+    font-size: 2.5rem;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+}
+
+label {
+    width: max-content;
+    margin-right: 25px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 200px;
+    font-size: 14px;
+    padding: 2px;
+    border: 1px solid #388e3c;
+    border-radius: 5px;
+}
+
+.radio {
+    width: 25px;
+    margin-left: 25px;
+}
+
+/* Style du bouton */
+button {
+    margin-left: 250px;
+    padding: 10px 20px;
+    background-color: #fbc02d; /* Jaune doré doux */
+    border: none;
+    color: #388e3c; /* Vert foncé pour le texte */
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #f9a825; /* Jaune doré plus intense au survol */
+}
+
+/* Effet de pluie d'emoji de blé */
+.rain-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none; /* Empêche d'interagir avec la pluie */
+}
+
+.emoji-rain {
+    position: absolute;
+    top: -10%;
+    animation: fall 5s;
+    font-size: 2rem;
+}
+
+@keyframes fall {
+    0% {
+        top: -10%;
+        transform: translateX(0);
+    }
+    100% {
+        top: 100%;
+        transform: translateX(100px);
+    }
+}
+
+/* Distribution aléatoire des emojis */
+.emoji-rain:nth-child(1) { left: 10%; animation-duration: 6s; }
+.emoji-rain:nth-child(2) { left: 20%; animation-duration: 7s; }
+.emoji-rain:nth-child(3) { left: 30%; animation-duration: 5.5s; }
+.emoji-rain:nth-child(4) { left: 40%; animation-duration: 6.5s; }
+.emoji-rain:nth-child(5) { left: 50%; animation-duration: 8s; }
+
+/* Ajout des 3 nouveaux emojis */
+.emoji-rain:nth-child(6) { left: 60%; animation-duration: 7.5s; }
+.emoji-rain:nth-child(7) { left: 70%; animation-duration: 6.8s; }
+.emoji-rain:nth-child(8) { left: 80%; animation-duration: 9s; }
